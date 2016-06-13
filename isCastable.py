@@ -166,13 +166,20 @@ def deriveLands(lands, cost, sol):
 	return retDict
 	
 #returns true if the lands can cast all of the symbols in the cost at the same time.	
-def isCastable(lands, cost):
+def isCastable(lands, cost, memo = {}):
+	lands = sorted(lands)
+	tlands = tuple([tuple(land) for land in lands])
+	if tlands in memo:
+		return memo[tlands]
+
 	mts = ManaToSAT(lands, cost)
 	#for thing in mts.SAT:
 		#print thing
 	if mts.sol != "UNSAT":
+		memo[tlands] = True
 		return True
 	else:
+		memo[tlands] = False
 		return False
 		
 if __name__ == "__main__":
