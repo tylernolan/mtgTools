@@ -1,5 +1,5 @@
 import pycosat
-
+from collections import defaultdict
 '''
 This file contains two classes for turning lands and manaCosts into boolean values corresponding to whether the lands can cast the mana
 As far as I can tell, the SAT reduction is much faster for reasonable inputs.
@@ -166,22 +166,23 @@ def deriveLands(lands, cost, sol):
 	return retDict
 	
 #returns true if the lands can cast all of the symbols in the cost at the same time.	
-def isCastable(lands, cost, memo = {}):
+def isCastable(lands, cost):
 	lands = sorted(lands)
 	tlands = tuple([tuple(land) for land in lands])
-	if tlands in memo:
-		return memo[tlands]
+	tcost = tuple(sorted([tuple(c) for c in cost]))
+	#if tlands in memo and tcost in memo[tlands]:
+	#	return memo[tlands][tcost]
 
 	mts = ManaToSAT(lands, cost)
 	#for thing in mts.SAT:
 		#print thing
 	if mts.sol != "UNSAT":
-		memo[tlands] = True
+		memo[tlands][tcost] = True
 		return True
 	else:
-		memo[tlands] = False
+		memo[tlands][tcost] = False
 		return False
-		
+memo = defaultdict(dict)
 if __name__ == "__main__":
 	lands = [['B','R'], ['R'], ['B'], ['W'], ['W'], ['R']]
 	cost = ['W','R','W', 'R', 'B']
